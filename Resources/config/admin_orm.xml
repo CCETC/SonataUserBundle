@@ -6,7 +6,7 @@
     <parameters>
         <!-- USER -->
         <parameter key="sonata.user.admin.user.class">Sonata\UserBundle\Admin\Entity\UserAdmin</parameter>
-        <parameter key="sonata.user.admin.user.controller">SonataAdminBundle:CRUD</parameter>
+        <parameter key="sonata.user.admin.user.controller">SonataUserBundle:UserAdmin</parameter>
         <parameter key="sonata.user.admin.user.entity">Application\Sonata\UserBundle\Entity\User</parameter>
         <parameter key="sonata.user.admin.user.translation_domain">SonataUserBundle</parameter>
 

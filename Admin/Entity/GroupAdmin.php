@@ -14,6 +14,7 @@ namespace Sonata\UserBundle\Admin\Entity;
 use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 
@@ -29,22 +30,40 @@ class GroupAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('name')
-            ->add('roles')
+            ->addIdentifier('name', null, array('label' => 'Name'))
+            ->add('roles', 'string', array('label' => 'Roles', 'template' => 'SonataUserBundle:Group:roles.html.twig'))
         ;
+        
+        $listMapper->add('_action', 'actions', array(
+            'actions' => array(
+                'view' => array(),
+                'edit' => array(),
+                'delete' => array(),
+            ),
+            'label' => 'Actions'
+        ));
+
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
-            ->add('name')
+            ->add('name', null, array('label' => 'Name'))
         ;
     }
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('name')
-            ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false))
+            ->add('name', null, array('label' => 'Name'))
+            ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false, 'label' => 'Roles'))
         ;
     }
+    
+    protected function configureShowField(ShowMapper $showMapper)
+    {
+        $showMapper
+            ->add('name', null, array('label' => 'Name'))
+        ;
+    }
+
 }

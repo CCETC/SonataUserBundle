@@ -15,6 +15,7 @@ use Sonata\AdminBundle\Admin\Admin;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 
 use FOS\UserBundle\Model\UserManagerInterface;
@@ -28,48 +29,94 @@ class UserAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('username')
-            ->add('email')
-            ->add('enabled')
-            ->add('locked')
-            ->add('createdAt')
+            ->addIdentifier('email', null, array('label' => 'E-mail'))
+            ->add('name', null, array('label' => 'Name'))
+            ->add('groups', 'string', array('label' => 'Groups', 'template' => 'SonataUserBundle:User:groups.html.twig'))
+            ->add('enabled', null, array('label' => 'Approved?'))
         ;
-
+        
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
             $listMapper
-                ->add('impersonating', 'string', array('template' => 'SonataUserBundle:Admin:Field/impersonating.html.twig'))
+                ->add('impersonating', 'string', array('template' => 'SonataUserBundle:User:impersonating.html.twig', 'label' => 'Impersonate'))
             ;
         }
+        
+        $listMapper->add('_action', 'actions', array(
+            'actions' => array(
+                'view' => array(),
+                'edit' => array(),
+                'delete' => array(),
+            ),
+            'label' => 'Actions'
+        ));
     }
 
     protected function configureDatagridFilters(DatagridMapper $filterMapper)
     {
         $filterMapper
-            ->add('username')
-            ->add('locked')
-            ->add('email')
-            ->add('id')
+            ->add('name', null, array('label' => 'Name'))
+            ->add('email', null, array('label' => 'E-mail'))
+            ->add('enabled', null, array('label' => 'Approved?'))
         ;
+    }
+    
+    public function getBatchActions()
+    {
+        $actions = parent::getBatchActions();
+
+        $actions['enable'] = array(
+            'label' => 'Approve Selected',
+            'ask_confirmation' => false
+        );
+
+        $actions['disable'] = array(
+            'label' => 'Un-Approve Selected',
+            'ask_confirmation' => false
+        );
+        
+        return $actions;
+    }
+
+    public function configureRoutes(RouteCollection $collection)
+    {
+        $collection->add('enable', 'enable/{id}');
+        $collection->add('disable', 'disable/{id}');
     }
 
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
             ->with('General')
-                ->add('username')
-                ->add('email')
-                ->add('plainPassword', 'text', array('required' => false))
+                ->add('name', null, array('label' => 'Name', 'required' => false))
+                ->add('email', null, array('label' => 'E-mail'))
+                ->add('plainPassword', 'text', array('required' => false, 'label' => 'Password'))
+                ->add('enabled', null, array('required' => false, 'label' => 'Approved?'))
             ->end()
             ->with('Groups')
-                ->add('groups', 'sonata_type_model', array('required' => false))
+                ->add('groups', 'sonata_type_model', array('required' => false, 'label' => 'Groups'))
             ->end()
-            ->with('Management')
-                ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false))
-                ->add('locked', null, array('required' => false))
-                ->add('expired', null, array('required' => false))
-                ->add('enabled', null, array('required' => false))
-                ->add('credentialsExpired', null, array('required' => false))
-            ->end()
+            ->setHelps(array(
+                    'groups' => 'CTRL/CMD + click to select multiple groups'
+            ))
+        ;
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            $formMapper
+                ->with('Management')
+                    ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false, 'label' => 'Roles'))
+                ->end()
+                ->setHelps(array(
+                        'roles' => 'CTRL/CMD + click to select multiple roles'
+                ))
+            ;
+        }
+    }
+    
+    protected function configureShowField(ShowMapper $showMapper)
+    {
+        $showMapper
+            ->add('name', null, array('label' => 'Name'))
+            ->add('email', null, array('label' => 'E-mail'))
+            ->add('enabled', null, array('label' => 'Approved?'))
         ;
     }
 
