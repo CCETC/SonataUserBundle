@@ -17,8 +17,8 @@ class UserAdminController extends Controller
 
   public function sendAccountEnabledEmail($toAddress)
   {
-    $applicationTitle = $this->container->get('adminSettings')->adminTitle;  
-      
+    $applicationTitle = $this->container->get('sonata.admin.pool')->getTitle();  
+
     $message = \Swift_Message::newInstance()
             ->setSubject($applicationTitle.' - Account Approved')
             ->setFrom($this->container->getParameter('fos_user.registration.confirmation.from_email'))
