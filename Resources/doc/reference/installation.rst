@@ -101,6 +101,25 @@ Now, add the new `Application` Bundle into the kernel
   }
 
 
+Acl Configuration
+-----------------
+
+When using ACL, the UserBundle can prevent ``normal`` user to change settings of ``super-admin`` users, to enable this
+add to the configuration:
+
+.. code-block:: yaml
+
+    # app/config/config.yml
+    sonata_user:
+        security_acl: true
+
+
+    # app/config/security.yml
+    security:
+        # [...]
+        acl:
+            connection: default
+
 Doctrine Configuration
 ----------------------
 
@@ -109,6 +128,14 @@ Then add these bundles in the config mapping definition (or enable `auto_mapping
 .. code-block:: yaml
 
     # app/config/config.yml
+
+    fos_user:
+        db_driver:      orm # can be orm or odm
+        firewall_name:  main
+        user_class:     Application\Sonata\UserBundle\Entity\User
+
+        group:
+            group_class: Application\Sonata\UserBundle\Entity\Group
 
     doctrine:
         orm:
@@ -130,6 +157,7 @@ Add the related security routing information
         resource: '@SonataUserBundle/Resources/config/routing/admin_security.xml'
         prefix: /admin
 
+You also need to define a ``sonata_user_impersonating`` route, used as a redirection after an user impersonating.
 
 Then add a new custom firewall handlers for the admin
 
@@ -137,10 +165,10 @@ Then add a new custom firewall handlers for the admin
 
     security:
         role_hierarchy:
-            ROLE_ADMIN:       ROLE_USER
-            ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_SONATA_ADMIN, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+            ROLE_ADMIN:       [ROLE_USER, ROLE_SONATA_ADMIN]
+            ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
             SONATA:
-                - ROLE_SONATA_PAGE_ADMIN_PAGE_EDIT  # if you are not using acl then this line must be uncommented
+                - ROLE_SONATA_PAGE_ADMIN_PAGE_EDIT  # if you are using acl then this line must be commented
 
         providers:
             fos_userbundle:
@@ -149,7 +177,9 @@ Then add a new custom firewall handlers for the admin
         firewalls:
             # -> custom firewall for the admin area of the URL
             admin:
-                pattern:      /admin(.*)
+                switch_user:        true
+                context:            user
+                pattern:            /admin(.*)
                 form_login:
                     provider:       fos_userbundle
                     login_path:     /admin/login
@@ -166,15 +196,17 @@ Then add a new custom firewall handlers for the admin
 
             # defaut login area for standard users
             main:
-                pattern:      .*
+                switch_user:        true
+                context:            user
+                pattern:            .*
                 form_login:
                     provider:       fos_userbundle
                     login_path:     /login
                     use_forward:    false
                     check_path:     /login_check
                     failure_path:   null
-                logout:       true
-                anonymous:    true
+                logout:             true
+                anonymous:          true
 
 The last part is to define 3 new access control rules :
 
@@ -201,3 +233,10 @@ The last part is to define 3 new access control rules :
             # Change these rules to adapt them to your needs
             - { path: ^/admin, role: [ROLE_ADMIN, ROLE_SONATA_ADMIN] }
             - { path: ^/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
+
+
+Using the roles
+---------------
+
+Each admin has its own roles, use the user form to assign them to other users. The available roles to assign to others
+are limited to the roles available to the user editing the form.

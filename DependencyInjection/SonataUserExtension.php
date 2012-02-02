@@ -11,13 +11,14 @@
 
 namespace Sonata\UserBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
+
+use Sonata\EasyExtendsBundle\Mapper\DoctrineCollector;
 
 /**
  *
@@ -28,33 +29,75 @@ class SonataUserExtension extends Extension
 
     /**
      *
-     * @param array            $config    An array of configuration settings
+     * @param array            $configs   An array of configuration settings
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    public function load(array $config, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
+        $processor = new Processor();
+        $configuration = new Configuration();
+        $config = $processor->processConfiguration($configuration, $configs);
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('admin_orm.xml');
         $loader->load('form.xml');
+
+        if ($config['security_acl']) {
+            $loader->load('security_acl.xml');
+        }
+
+        $this->registerDoctrineMapping($config);
+        $this->configureClass($config, $container);
+
+        // add custom form widgets
+        $container->setParameter('twig.form.resources', array_merge(
+            $container->getParameter('twig.form.resources'),
+            array('SonataUserBundle:Form:form_admin_fields.html.twig')
+        ));
     }
 
     /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
+     * @param $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @return void
      */
-    public function getXsdValidationBasePath()
+    public function configureClass($config, ContainerBuilder $container)
     {
-        return __DIR__.'/../Resources/config/schema';
+        $container->setParameter('sonata.user.admin.user.entity', $config['class']['user']);
+        $container->setParameter('sonata.user.admin.group.entity', $config['class']['group']);
     }
 
-    public function getNamespace()
+    /**
+     * @param array $config
+     * @return void
+     */
+    public function registerDoctrineMapping(array $config)
     {
-        return 'http://www.sonata-project.org/schema/dic/page';
-    }
+        foreach ($config['class'] as $type => $class) {
+            if (!class_exists($class)) {
+                return;
+            }
+        }
 
-    public function getAlias()
-    {
-        return "sonata_user";
+        $collector = DoctrineCollector::getInstance();
+
+        $collector->addAssociation($config['class']['user'], 'mapManyToMany', array(
+            'fieldName'       => 'groups',
+            'targetEntity'    => $config['class']['group'],
+            'cascade'         => array( ),
+            'joinTable'       => array(
+                'name' => $config['table']['user_group'],
+                'joinColumns' => array(
+                    array(
+                        'name' => 'user_id',
+                        'referencedColumnName' => 'id',
+                    ),
+                ),
+                'inverseJoinColumns' => array( array(
+                    'name' => 'group_id',
+                    'referencedColumnName' => 'id',
+                )),
+            )
+        ));
     }
 }

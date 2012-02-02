@@ -20,6 +20,10 @@ use Sonata\AdminBundle\Route\RouteCollection;
 
 class GroupAdmin extends Admin
 {
+    protected $formOptions = array(
+        'validation_groups' => 'Registration'
+    );
+
     public function getNewInstance()
     {
         $class = $this->getClass();
