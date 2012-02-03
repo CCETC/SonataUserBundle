@@ -142,6 +142,15 @@
                 <source>list.label_roles</source>
                 <target>Roles</target>
             </trans-unit>
+            <trans-unit id="field.label_roles_editable">
+                <source>field.label_roles_editable</source>
+                <target>Edit</target>
+            </trans-unit>
+            <trans-unit id="field.label_roles_readonly">
+                <source>field.label_roles_editable</source>
+                <target>Edit</target>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>

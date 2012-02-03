@@ -60,7 +60,9 @@ class GroupAdmin extends Admin
         $formMapper
             ->add('name', null, array('label' => 'Name'))
             ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false, 'label' => 'Roles'))
-        ;
+            ->setHelps(array(
+                'roles' => 'CTRL + click to select multiple (CMD + click on MAC)'
+            ));
     }
     
     protected function configureShowField(ShowMapper $showMapper)

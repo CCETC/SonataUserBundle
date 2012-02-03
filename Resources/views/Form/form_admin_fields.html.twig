@@ -1,7 +1,6 @@
 {% block sonata_security_roles_widget %}
 {% spaceless %}
     <div class="editable">
-        <h4>{{ 'field.label_roles_editable'|trans }}</h4>
         {{ block('choice_widget') }}
     </div>
     {% if read_only_choices|length > 0 %}
