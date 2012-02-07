@@ -22,6 +22,8 @@ use FOS\UserBundle\Model\UserManagerInterface;
 
 class UserAdmin extends Admin
 {
+    protected $entityIconPath = 'bundles/sonataadmin/famfamfam/user.png';
+
     protected $formOptions = array(
         'validation_groups' => 'admin'
     );

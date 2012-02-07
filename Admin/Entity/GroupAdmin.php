@@ -20,6 +20,8 @@ use Sonata\AdminBundle\Route\RouteCollection;
 
 class GroupAdmin extends Admin
 {
+    protected $entityIconPath = 'bundles/sonataadmin/famfamfam/group.png';
+    
     protected $formOptions = array(
         'validation_groups' => 'Registration'
     );
