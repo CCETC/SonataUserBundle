@@ -21,6 +21,9 @@ For full documentation of the original bundle refer to ``Resources/doc/reference
 ## Installation
 This bundle must be installed along the CCETC forks of the [SonataAdminBundle](https://github.com/CCETC/SonataAdminBundle) and the [FOSUserBundle](https://github.com/CCETC/FOSUserBundle).
 
+## Documentation
+All ISSUES, IDEAS, and FEATURES are documented on the [trello board](https://trello.com/board/sonatauserbundle/4f8f261e067c6a6d60013753).
+
 ## Configuration
 The original bundle is configured to handle separate logins for both the front and back ends.  This fork is configured for just one.  So login and logout routes are not prepended by ``admin/`` and only one firewall is configured in ``security.yml``.
 
