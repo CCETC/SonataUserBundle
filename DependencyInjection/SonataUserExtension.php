@@ -39,12 +39,15 @@ class SonataUserExtension extends Extension
         $config = $processor->processConfiguration($configuration, $configs);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('admin_orm.xml');
+        $loader->load(sprintf('admin_%s.xml', $config['manager_type']));
         $loader->load('form.xml');
+        $loader->load('google_authenticator.xml');
 
         if ($config['security_acl']) {
             $loader->load('security_acl.xml');
         }
+
+        $config = $this->addDefaults($config);
 
         $this->registerDoctrineMapping($config);
         $this->configureClass($config, $container);
@@ -54,6 +57,54 @@ class SonataUserExtension extends Extension
             $container->getParameter('twig.form.resources'),
             array('SonataUserBundle:Form:form_admin_fields.html.twig')
         ));
+
+        $this->configureGoogleAuthenticator($config, $container);
+    }
+
+    /**
+     * @throws \RuntimeException
+     * @param $config
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @return
+     */
+    public function configureGoogleAuthenticator($config, ContainerBuilder $container)
+    {
+        $container->setParameter('sonata.user.google.authenticator.enabled', $config['google_authenticator']['enabled']);
+
+        if (!$config['google_authenticator']['enabled']) {
+            $container->removeDefinition('sonata.user.google.authenticator');
+            $container->removeDefinition('sonata.user.google.authenticator.provider');
+            $container->removeDefinition('sonata.user.google.authenticator.interactive_login_listener');
+            $container->removeDefinition('sonata.user.google.authenticator.request_listener');
+
+            return;
+        }
+
+        if (!class_exists('Google\Authenticator\GoogleAuthenticator')) {
+            throw new \RuntimeException('Please install GoogleAuthenticator.php available on github.com');
+        }
+
+        $container->getDefinition('sonata.user.google.authenticator.provider')
+            ->replaceArgument(0, $config['google_authenticator']['server']);
+
+    }
+
+    /**
+     * @param array $config
+     * @return array
+     */
+    public function addDefaults(array $config)
+    {
+        if ('orm' === $config['manager_type']) {
+            $modelType = 'Entity';
+        } elseif ('mongodb' === $config['manager_type']) {
+            $modelType = 'Document';
+        }
+
+        $defaultConfig['class']['user']  = sprintf('Application\\Sonata\\UserBundle\\%s\\User', $modelType);
+        $defaultConfig['class']['group'] = sprintf('Application\\Sonata\\UserBundle\\%s\\Group', $modelType);
+
+        return array_merge($defaultConfig, $config);
     }
 
     /**
@@ -63,8 +114,14 @@ class SonataUserExtension extends Extension
      */
     public function configureClass($config, ContainerBuilder $container)
     {
-        $container->setParameter('sonata.user.admin.user.entity', $config['class']['user']);
-        $container->setParameter('sonata.user.admin.group.entity', $config['class']['group']);
+        if ('orm' === $config['manager_type']) {
+            $modelType = 'entity';
+        } elseif ('mongodb' === $config['manager_type']) {
+            $modelType = 'document';
+        }
+
+        $container->setParameter(sprintf('sonata.user.admin.user.%s', $modelType), $config['class']['user']);
+        $container->setParameter(sprintf('sonata.user.admin.group.%s', $modelType), $config['class']['group']);
     }
 
     /**

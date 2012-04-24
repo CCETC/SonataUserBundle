@@ -5,12 +5,12 @@
 
     <parameters>
         <!-- USER -->
-        <parameter key="sonata.user.admin.user.class">Sonata\UserBundle\Admin\Entity\UserAdmin</parameter>
-        <parameter key="sonata.user.admin.user.controller">SonataUserBundle:UserAdmin</parameter>
+        <parameter key="sonata.user.admin.user.class">Sonata\UserBundle\Admin\Document\UserAdmin</parameter>
+        <parameter key="sonata.user.admin.user.controller">SonataAdminBundle:CRUD</parameter>
         <parameter key="sonata.user.admin.user.translation_domain">SonataUserBundle</parameter>
 
         <!-- GROUP -->
-        <parameter key="sonata.user.admin.group.class">Sonata\UserBundle\Admin\Entity\GroupAdmin</parameter>
+        <parameter key="sonata.user.admin.group.class">Sonata\UserBundle\Admin\Document\GroupAdmin</parameter>
         <parameter key="sonata.user.admin.group.controller">SonataAdminBundle:CRUD</parameter>
         <parameter key="sonata.user.admin.group.translation_domain">%sonata.user.admin.user.translation_domain%</parameter>
 
@@ -19,9 +19,9 @@
 
     <services>
         <service id="sonata.user.admin.user" class="%sonata.user.admin.user.class%">
-            <tag name="sonata.admin" manager_type="orm" group="%sonata.user.admin.groupname%" label="users" label_catalogue="SonataUserBundle" label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <tag name="sonata.admin" manager_type="doctrine_mongodb" group="%sonata.user.admin.groupname%" label="users" label_translator_strategy="sonata.admin.label.strategy.underscore" />
             <argument />
-            <argument>%sonata.user.admin.user.entity%</argument>
+            <argument>%sonata.user.admin.user.document%</argument>
             <argument>%sonata.user.admin.user.controller%</argument>
             <call method="setUserManager">
                 <argument type="service" id="fos_user.user_manager" />
@@ -32,9 +32,9 @@
         </service>
 
         <service id="sonata.user.admin.group" class="%sonata.user.admin.group.class%">
-            <tag name="sonata.admin" manager_type="orm" group="%sonata.user.admin.groupname%" label="groups" label_catalogue="SonataUserBundle"  label_translator_strategy="sonata.admin.label.strategy.underscore" />
+            <tag name="sonata.admin" manager_type="doctrine_mongodb" group="%sonata.user.admin.groupname%" label="groups" label_translator_strategy="sonata.admin.label.strategy.underscore" />
             <argument />
-            <argument>%sonata.user.admin.group.entity%</argument>
+            <argument>%sonata.user.admin.group.document%</argument>
             <argument>%sonata.user.admin.group.controller%</argument>
             <call method="setTranslationDomain">
                 <argument>%sonata.user.admin.group.translation_domain%</argument>

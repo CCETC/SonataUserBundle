@@ -1,14 +1,15 @@
 {
-    "name": "sonata/user-bundle",
+    "name": "sonata-project/user-bundle",
     "type": "symfony-bundle",
     "description": "Symfony SonataUserBundle",
-    "keywords": ["user", "sonata"],
+    "keywords": ["user", "sonata", "google authenticator"],
     "homepage": "http://sonata-project.org/bundles/user",
     "license": "MIT",
     "authors": [
         {
             "name": "Thomas Rabaix",
-            "email": "thomas.rabaix@sonata-project.org"
+            "email": "thomas.rabaix@sonata-project.org",
+            "homepage": "http://sonata-project.org"
         },
         {
             "name": "Sonata Community",
@@ -17,12 +18,12 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "symfony/framework-bundle": "2.*",
-        "sonata/admin-bundle": "master-dev",
+        "symfony/framework-bundle": "2.0.*",
+        "sonata-project/admin-bundle": "2.0.*",
         "friendsofsymfony/user-bundle": "1.*"
     },
     "suggest": {
-        "sonata/doctrine-orm-admin-bundle": "*"
+        "sonata-project/doctrine-orm-admin-bundle": "2.0.*"
     },
     "autoload": {
         "psr-0": { "Sonata\\UserBundle": "" }

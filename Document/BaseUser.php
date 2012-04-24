@@ -9,9 +9,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Sonata\UserBundle\Entity;
+namespace Sonata\UserBundle\Document;
 
-use FOS\UserBundle\Entity\User as AbstractedUser;
+use FOS\UserBundle\Document\User as AbstractedUser;
 use Sonata\UserBundle\Model\UserInterface;
 
 class BaseUser extends AbstractedUser implements UserInterface
@@ -63,16 +63,6 @@ class BaseUser extends AbstractedUser implements UserInterface
     {
         return $this->updatedAt;
     }
-    
-    /**
-     * Get ExpiresAt
-     * 
-     * @return \DateTime|null
-     */
-    public function getExpiresAt()
-    {
-        return $this->expiresAt;
-    }
 
     /**
      * @return void
@@ -89,23 +79,6 @@ class BaseUser extends AbstractedUser implements UserInterface
     public function preUpdate()
     {
         $this->updatedAt = new \DateTime;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCredentialsExpireAt()
-    {
-        return $this->credentialsExpireAt;
-    }
-
-    /**
-     * @param \DateTime|null $date
-     * @return void
-     */
-    public function setCredentialsExpireAt(\DateTime $date = null)
-    {
-        $this->credentialsExpireAt = $date;
     }
 
     /**
