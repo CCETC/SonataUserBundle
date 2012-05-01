@@ -21,8 +21,19 @@ For full documentation of the original bundle refer to ``Resources/doc/reference
 ## Installation
 This bundle must be installed along the CCETC forks of the [SonataAdminBundle](https://github.com/CCETC/SonataAdminBundle) and the [FOSUserBundle](https://github.com/CCETC/FOSUserBundle).
 
+### dist file
+The UserAdmin class is included as a .dist file.  As different user entities in different Symfony projects will have different fields, this file will change from project to project.  So, to keep the git repo clean, the .dist file should remain untouched.
+
+To get started you can simply copy the file and run as is, or copy and add your custom fields.
+
+	cp Admin/Entity/UserAdmin.php.dist Admin/Entity/UserAdmin.php
+
 ## Documentation
 All ISSUES, IDEAS, and FEATURES are documented on the [trello board](https://trello.com/board/sonatauserbundle/4f8f261e067c6a6d60013753).
+
+## Areas for improvement / "broken windows"
+### dist files
+As documented above, several files exist as .dist files so that they can be customized without interferring with the repo.  Because of this, upstream changes from FOS to these files are not merged with our fork.  These files are basic files (forms, and templates) so there should never be considerable changes to manaully merge.
 
 ## Configuration
 The original bundle is configured to handle separate logins for both the front and back ends.  This fork is configured for just one.  So login and logout routes are not prepended by ``admin/`` and only one firewall is configured in ``security.yml``.

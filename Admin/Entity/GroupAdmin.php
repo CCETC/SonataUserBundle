@@ -37,7 +37,7 @@ class GroupAdmin extends Admin
     {
         $listMapper
             ->addIdentifier('name', null, array('label' => 'Name'))
-            ->add('roles', 'string', array('label' => 'Roles', 'template' => 'SonataUserBundle:Group:roles.html.twig'))
+            ->add('roles', 'string', array('label' => 'Roles', 'template' => 'SonataUserBundle:Group:_list_roles.html.twig'))
         ;
         
         $listMapper->add('_action', 'actions', array(
@@ -62,15 +62,14 @@ class GroupAdmin extends Admin
         $formMapper
             ->add('name', null, array('label' => 'Name'))
             ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'expanded' => true, 'required' => false, 'label' => 'Roles'))
-            ->setHelps(array(
-                'roles' => 'CTRL + click to select multiple (CMD + click on MAC)'
-            ));
+        ;
     }
     
     protected function configureShowField(ShowMapper $showMapper)
     {
         $showMapper
             ->add('name', null, array('label' => 'Name'))
+            ->add('roles', null, array('label' => 'Roles', 'template' => 'SonataUserBundle:Group:_show_roles.html.twig'))
         ;
     }
 

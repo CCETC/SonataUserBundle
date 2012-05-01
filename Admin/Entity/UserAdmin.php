@@ -31,15 +31,15 @@ class UserAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('email', null, array('label' => 'E-mail'))
-            //->add('name', null, array('label' => 'Name'))
-            ->add('groups', 'string', array('label' => 'Groups', 'template' => 'SonataUserBundle:User:groups.html.twig'))
+            ->add('email', null, array('label' => 'E-mail', 'template' => 'SonataUserBundle:User:_list_email.html.twig'))
+            //->addIdentifier('name', null, array('label' => 'Name'))
+            ->add('groups', 'string', array('label' => 'Groups', 'template' => 'SonataUserBundle:User:_list_groups.html.twig'))
             ->add('enabled', null, array('label' => 'Approved?'))
         ;
 
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
             $listMapper
-                ->add('impersonating', 'string', array('template' => 'SonataUserBundle:User:impersonating.html.twig', 'label' => 'Impersonate'))
+                ->add('impersonating', 'string', array('template' => 'SonataUserBundle:User:_list_impersonating.html.twig', 'label' => 'Impersonate'))
             ;
         }        
         
@@ -59,6 +59,7 @@ class UserAdmin extends Admin
             //->add('name', null, array('label' => 'Name'))
             ->add('email', null, array('label' => 'E-mail'))
             ->add('enabled', null, array('label' => 'Approved?'))
+            ->add('groups', null, array('label' => 'Group'))
         ;
     }
     
@@ -94,21 +95,16 @@ class UserAdmin extends Admin
                 ->add('plainPassword', 'text', array('required' => false, 'label' => 'Password'))
                 ->add('enabled', null, array('required' => false, 'label' => 'Approved?'))
             ->end()
-            ->with('Groups')
-                ->add('groups', 'sonata_type_model', array('required' => false, 'label' => 'Groups'))
-            ->end()
-            ->setHelps(array(
-                    'groups' => 'CTRL/CMD + click to select multiple groups'
-            ))
+            ->with('Permissions')
+                ->add('groups', 'sonata_type_model', array( 'multiple' => true, 'expanded' => true, 'required' => false, 'label' => 'Groups'))
+
+                ->end()
         ;
         if ($this->isGranted('ROLE_SUPER_ADMIN')) {
             $formMapper
-                ->with('Management')
-                    ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'required' => false, 'label' => 'Roles'))
+                ->with('Permissions')
+                    ->add('roles', 'sonata_security_roles', array( 'multiple' => true, 'expanded' => true, 'required' => false, 'label' => 'Roles'))
                 ->end()
-                ->setHelps(array(
-                        'roles' => 'CTRL/CMD + click to select multiple roles'
-                ))
             ;
         }
     }
@@ -117,9 +113,15 @@ class UserAdmin extends Admin
     {
         $showMapper
             //->add('name', null, array('label' => 'Name'))
-            ->add('email', null, array('label' => 'E-mail'))
+            ->add('email', null, array('label' => 'E-mail', 'template' => 'SonataUserBundle:User:_show_email.html.twig'))
             ->add('enabled', null, array('label' => 'Approved?'))
+            ->add('groups', null, array('label' => 'Groups'))
         ;
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            $showMapper
+                ->add('roles', null, array('label' => 'Roles', 'template' => 'SonataUserBundle:User:_show_roles.html.twig'))
+            ;
+        }
     }
 
     public function preUpdate($user)

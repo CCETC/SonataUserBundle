@@ -1,0 +1,14 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field %}
+    {% if object.groups|length == 0 %}
+        User
+    {% else %}
+        {% for group in object.groups %}
+            {% if field_description.associationadmin.isGranted('VIEW') %}<a href="{{ field_description.associationadmin.generateObjectUrl('show', group) }}">{% endif %}
+            {{ group }}
+            {% if field_description.associationadmin.isGranted('VIEW') %}</a>{% endif %}
+            <br/>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
