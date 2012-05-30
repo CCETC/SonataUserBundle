@@ -23,7 +23,10 @@ use FOS\UserBundle\Model\UserManagerInterface;
 class UserAdmin extends Admin
 {
     protected $entityIconPath = 'bundles/sonataadmin/famfamfam/user.png';
-
+    protected $entityLabelSingular = "Staff Member";
+    protected $entityLabelPlural = "Staff";
+    
+    
     protected $formOptions = array(
         'validation_groups' => 'admin'
     );
@@ -32,50 +35,66 @@ class UserAdmin extends Admin
     {
         $listMapper
             ->add('email', null, array('label' => 'E-mail', 'template' => 'SonataUserBundle:User:_list_email.html.twig'))
-            //->addIdentifier('name', null, array('label' => 'Name'))
-            ->add('groups', 'string', array('label' => 'Groups', 'template' => 'SonataUserBundle:User:_list_groups.html.twig'))
-            ->add('enabled', null, array('label' => 'Approved?'))
+            ->add('lastName', 'string', array('label' => 'Name', 'template' => 'ApplicationSonataUserBundle:User:_list_name.html.twig'))
         ;
 
+        if ($this->isGranted('ADMIN')) {
+            $listMapper
+                ->add('enabled', null, array('label' => 'Approved?'))
+                ->add('groups', 'string', array('label' => 'Groups', 'template' => 'SonataUserBundle:User:_list_groups.html.twig'))
+            ;
+        }
+
+        
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
             $listMapper
                 ->add('impersonating', 'string', array('template' => 'SonataUserBundle:User:_list_impersonating.html.twig', 'label' => 'Impersonate'))
             ;
         }        
         
-        $listMapper->add('_action', 'actions', array(
-            'actions' => array(
-                'view' => array(),
-                'edit' => array(),
-                'delete' => array(),
-            ),
-            'label' => 'Actions'
-        ));
+        if ($this->isGranted('ADMIN')) {
+            $listMapper->add('_action', 'actions', array(
+                'actions' => array(
+                    'view' => array(),
+                    'edit' => array(),
+                    'delete' => array(),
+                ),
+                'label' => 'Actions'
+            ));
+        }
     }
 
     protected function configureDatagridFilters(DatagridMapper $filterMapper)
     {
         $filterMapper
-            //->add('name', null, array('label' => 'Name'))
+            ->add('firstName', null, array('label' => 'First Name'))
+            ->add('lastName', null, array('label' => 'Last Name'))
             ->add('email', null, array('label' => 'E-mail'))
-            ->add('enabled', null, array('label' => 'Approved?'))
-            ->add('groups', null, array('label' => 'Group'))
         ;
+        if ($this->isGranted('ADMIN')) {
+            $filterMapper
+                ->add('enabled', null, array('label' => 'Approved?'))
+                ->add('groups', null, array('label' => 'Groups'))
+            ;
+        }
+        
     }
     
     public function getBatchActions()
     {
         $actions = parent::getBatchActions();
 
-        $actions['enable'] = array(
-            'label' => 'Approve Selected',
-            'ask_confirmation' => false
-        );
+        if ($this->isGranted('ADMIN')) {
+            $actions['enable'] = array(
+                'label' => 'Approve Selected',
+                'ask_confirmation' => false
+            );
 
-        $actions['disable'] = array(
-            'label' => 'Un-Approve Selected',
-            'ask_confirmation' => false
-        );
+            $actions['disable'] = array(
+                'label' => 'Un-Approve Selected',
+                'ask_confirmation' => false
+            );
+        }
         
         return $actions;
     }
@@ -90,8 +109,9 @@ class UserAdmin extends Admin
     {
         $formMapper
             ->with('General')
-                //->add('name', null, array('label' => 'Name', 'required' => false))
                 ->add('email', null, array('label' => 'E-mail'))
+                ->add('firstName', null, array('label' => 'First Name'))
+                ->add('lastName', null, array('label' => 'Last Name'))
                 ->add('plainPassword', 'text', array('required' => false, 'label' => 'Password'))
                 ->add('enabled', null, array('required' => false, 'label' => 'Approved?'))
             ->end()
@@ -112,11 +132,18 @@ class UserAdmin extends Admin
     protected function configureShowField(ShowMapper $showMapper)
     {
         $showMapper
-            //->add('name', null, array('label' => 'Name'))
+            ->add('firstName', null, array('label' => 'First Name'))
+            ->add('lastName', null, array('label' => 'Last Name'))
             ->add('email', null, array('label' => 'E-mail', 'template' => 'SonataUserBundle:User:_show_email.html.twig'))
-            ->add('enabled', null, array('label' => 'Approved?'))
-            ->add('groups', null, array('label' => 'Groups'))
         ;
+        
+        if ($this->isGranted('ADMIN')) {
+            $showMapper
+                ->add('enabled', null, array('label' => 'Approved?'))
+                ->add('groups', null, array('label' => 'Groups'))
+            ;
+        }        
+        
         if ($this->isGranted('ROLE_SUPER_ADMIN')) {
             $showMapper
                 ->add('roles', null, array('label' => 'Roles', 'template' => 'SonataUserBundle:User:_show_roles.html.twig'))
