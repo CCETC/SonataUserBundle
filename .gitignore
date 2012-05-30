@@ -1,2 +1,3 @@
 Admin/Entity/UserAdmin.php
+Admin/Entity/GroupAdmin.php
 Resources/translations/SonataUserBundle.en.xliff
