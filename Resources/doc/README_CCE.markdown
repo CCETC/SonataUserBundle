@@ -28,6 +28,11 @@ To get started you can simply copy the file and run as is, or copy and add your 
 
 	cp Admin/Entity/UserAdmin.php.dist Admin/Entity/UserAdmin.php
 
+To keep your customizations under version control, cp the files to your project and create symbolic links.
+
+        cp Admin/Entity/UserAdmin.php.dist /MyApp/app/Application/Sonata/UserBundle/Admin/Entity/UserAdmin.php
+        ln -s /MyApp/app/Application/Sonata/UserBundle/Admin/Entity/UserAdmin.php UserAdmin.php
+
 ## Documentation
 All ISSUES, IDEAS, and FEATURES are documented on the [trello board](https://trello.com/board/sonatauserbundle/4f8f261e067c6a6d60013753).
 
